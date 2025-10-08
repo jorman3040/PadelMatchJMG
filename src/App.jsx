@@ -10,7 +10,6 @@ function schedule({ playersRaw, courts, rounds, minutesPerRound, startISO }){
   const players = Array.from(new Set(
     playersRaw.split(/\n|,/).map(s=>s.trim()).filter(Boolean)
   ))
-
   if(!players.length || !courts || !rounds) return { rounds: [], players }
   const capacity = Math.max(1, courts)*4
   const start = startISO ? new Date(startISO) : null
@@ -39,19 +38,14 @@ function schedule({ playersRaw, courts, rounds, minutesPerRound, startISO }){
   return { rounds: roundsOut, players }
 }
 
-function fmtTime(d){
-  return d?.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) ?? ''
-}
-
-function keyFor(roundIdx, matchIdx){
-  return `${roundIdx}-${matchIdx}`
-}
+function fmtTime(d){ return d?.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) ?? '' }
+function keyFor(roundIdx, matchIdx){ return `${roundIdx}-${matchIdx}` }
 
 export default function App(){
-  const [playersRaw, setPlayersRaw] = useState('Jorge\nLilia\nDiego\nNico\nFer\nCeci\nPaul\nAna\nLuis\nVero')
-  const [courts, setCourts] = useState(2)
-  const [roundsN, setRoundsN] = useState(4)
-  const [minutes, setMinutes] = useState(20)
+  const [playersRaw, setPlayersRaw] = useState('Jorge\nLilia\nDiego\nLeo\nPepe\nAugusto')
+  const [courts, setCourts] = useState(1)
+  const [roundsN, setRoundsN] = useState(8)
+  const [minutes, setMinutes] = useState(15)
   const [useStart, setUseStart] = useState(false)
   const [startISO, setStartISO] = useState(new Date().toISOString().slice(0,16))
 
@@ -69,8 +63,7 @@ export default function App(){
     const next = {}
     for(const k in scores){ if(validKeys.has(k)) next[k] = scores[k] }
     if(JSON.stringify(next) !== JSON.stringify(scores)) setScores(next)
-    // eslint-disable-next-line
-  }, [roundsN, courts, playersRaw])
+  }, [roundsN, courts, playersRaw])  // eslint-disable-line
 
   const leaderboard = useMemo(()=>{
     const totals = Object.fromEntries(players.map(p => [p, 0]))
@@ -93,7 +86,6 @@ export default function App(){
     const next = { ...prev, [which]: Math.max(0, Number(val)||0) }
     setScores({ ...scores, [k]: next })
   }
-
   const inc = (roundIdx, matchIdx, which, delta) => {
     const k = keyFor(roundIdx, matchIdx)
     const prev = scores[k] || { a:0, b:0 }
@@ -101,36 +93,28 @@ export default function App(){
     setScores({ ...scores, [k]: next })
   }
 
-  const resetScores = () => {
-    if(confirm('¿Borrar todos los marcadores?')) setScores({})
-  }
+  const resetScores = () => { if(confirm('¿Borrar todos los marcadores?')) setScores({}) }
 
   const exportFixture = () => {
     const lines = []
     for(const r of rounds){
       lines.push(r.startTime ? `Ronda ${r.index} — ${fmtTime(r.startTime)}` : `Ronda ${r.index}`)
       for(const m of r.matches){
-        lines.push(`  Cancha ${m.court}: ${m.teamA.join(' & ')} vs ${m.teamB.join(' & ')}`)
+        lines.push(`  Cancha ${m.court} --> Pareja 1: ${m.teamA.join(' & ')} VS Pareja 2: ${m.teamB.join(' & ')}`)
       }
       if(r.bench?.length){ lines.push(`  Descansan: ${r.bench.join(', ')}`) }
       lines.push('')
     }
     shareOrCopy(lines.join('\n'), 'Fixture copiado al portapapeles')
   }
-
   const exportLeaderboard = () => {
-    const lines = ['Tabla de puntos — PadelMatch', '']
-    leaderboard.forEach((row, idx)=>{
-      lines.push(`${idx+1}. ${row.name}: ${row.points} pts`)
-    })
+    const lines = ['Tabla de puntos — PadelMatch','']
+    leaderboard.forEach((row, i)=>lines.push(`${i+1}. ${row.name}: ${row.points} pts`))
     shareOrCopy(lines.join('\n'), 'Tabla de puntos copiada al portapapeles')
   }
-
-  const shareOrCopy = async (text, fallbackMsg) => {
-    try {
-      if(navigator.share){ await navigator.share({ text }) }
-      else { await navigator.clipboard.writeText(text); alert(fallbackMsg) }
-    } catch(e){ console.log(e) }
+  const shareOrCopy = async (text, msg) => {
+    try { if(navigator.share){ await navigator.share({text}) } else { await navigator.clipboard.writeText(text); alert(msg) } }
+    catch(e){ console.log(e) }
   }
 
   return (
@@ -140,15 +124,10 @@ export default function App(){
         <div className="hero-strip" />
         <div className="hero-inner">
           <div className="brand">
-            <img src="/art/racket.svg" alt="" className="icon" />
+            <img src="/art/logo.png" alt="PadelMatch" className="logo" />
             <h1>PadelMatch</h1>
           </div>
           <p className="tag">Rondas, marcadores y tabla de puntos en tiempo real.</p>
-          <div className="badges">
-            <span className="badge blue">Azul</span>
-            <span className="badge green">Verde</span>
-            <span className="badge red">Rojo</span>
-          </div>
         </div>
       </div>
 
@@ -159,25 +138,12 @@ export default function App(){
       </section>
 
       <section className="card grid elevate">
-        <div>
-          <label>Canchas</label>
-          <input type="number" min={1} max={12} value={courts} onChange={e=>setCourts(parseInt(e.target.value||'1'))} />
-        </div>
-        <div>
-          <label>Rondas</label>
-          <input type="number" min={1} max={30} value={roundsN} onChange={e=>setRoundsN(parseInt(e.target.value||'1'))} />
-        </div>
-        <div>
-          <label>Min por ronda</label>
-          <input type="number" min={5} step={5} value={minutes} onChange={e=>setMinutes(parseInt(e.target.value||'5'))} />
-        </div>
+        <div><label>Canchas</label><input type="number" min={1} max={12} value={courts} onChange={e=>setCourts(parseInt(e.target.value||'1'))} /></div>
+        <div><label>Rondas</label><input type="number" min={1} max={30} value={roundsN} onChange={e=>setRoundsN(parseInt(e.target.value||'1'))} /></div>
+        <div><label>Min por ronda</label><input type="number" min={5} step={5} value={minutes} onChange={e=>setMinutes(parseInt(e.target.value||'5'))} /></div>
         <div className="toggle">
-          <label>
-            <input type="checkbox" checked={useStart} onChange={e=>setUseStart(e.target.checked)} /> Usar hora de inicio
-          </label>
-          {useStart && (
-            <input type="datetime-local" value={startISO} onChange={e=>setStartISO(e.target.value)} />
-          )}
+          <label><input type="checkbox" checked={useStart} onChange={e=>setUseStart(e.target.checked)} /> Usar hora de inicio</label>
+          {useStart && (<input type="datetime-local" value={startISO} onChange={e=>setStartISO(e.target.value)} />)}
         </div>
         <div className="full actions">
           <button className="btn blue">Generar</button>
@@ -190,19 +156,13 @@ export default function App(){
         <section className="list">
           {rounds.map(r=> (
             <div key={r.index} className="round padel">
-              <div className="round-head">
-                <h3>Ronda {r.index}</h3>
-                {r.startTime && <span>{fmtTime(r.startTime)}</span>}
-              </div>
+              <div className="round-head"><h3>Ronda {r.index}</h3>{r.startTime && <span>{fmtTime(r.startTime)}</span>}</div>
               {r.matches.map((m,idx)=>{
                 const k = keyFor(r.index, idx)
                 const s = scores[k] || { a:0, b:0 }
                 return (
                   <div key={idx} className="match column">
-                    <div className="row between">
-                      <div className="court">Cancha <b className="chip blue">{m.court}</b></div>
-                      <div className="teams">{m.teamA.join(' & ')} <b>vs</b> {m.teamB.join(' & ')}</div>
-                    </div>
+                    <div className="courtline">{`Cancha ${m.court} --> Pareja 1: ${m.teamA.join(' & ')} VS Pareja 2: ${m.teamB.join(' & ')}`}</div>
                     <div className="scorebar">
                       <div className="score">
                         <button onClick={()=>inc(r.index, idx, 'a', -1)}>-</button>
@@ -220,9 +180,7 @@ export default function App(){
                   </div>
                 )
               })}
-              {r.bench?.length>0 && (
-                <div className="bench"><span className="chip red">Descansan</span> {r.bench.join(', ')}</div>
-              )}
+              {r.bench?.length>0 && (<div className="bench"><span className="chip red">Descansan</span> {r.bench.join(', ')}</div>)}
             </div>
           ))}
         </section>
@@ -230,22 +188,14 @@ export default function App(){
 
       {players.length>0 && (
         <section className="card elevate leaderboard">
-          <div className="leader-head">
-            <h2>Tabla de puntos</h2>
-            <button className="btn blue" onClick={exportLeaderboard}>Exportar tabla</button>
-          </div>
+          <h2 className="center">Tabla de puntos</h2>
           <div className="table">
-            <div className="thead row">
-              <div>#</div><div>Jugador</div><div>Puntos</div>
-            </div>
+            <div className="thead row"><div>#</div><div>Jugador</div><div>Puntos</div></div>
             {leaderboard.map((row, idx)=>(
-              <div className="row" key={row.name}>
-                <div>{idx+1}</div>
-                <div>{row.name}</div>
-                <div className="points">{row.points}</div>
-              </div>
+              <div className="row" key={row.name}><div>{idx+1}</div><div>{row.name}</div><div className="points">{row.points}</div></div>
             ))}
           </div>
+          <div className="leader-actions"><button className="btn blue" onClick={exportLeaderboard}>Exportar tabla</button></div>
         </section>
       )}
 
