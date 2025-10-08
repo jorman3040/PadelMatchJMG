@@ -125,7 +125,10 @@ export default function App(){
         <div className="hero-inner">
           <div className="brand">
             <img src="/art/logo.png" alt="PadelMatch" className="logo" />
-            <h1>PadelMatch</h1>
+            <div className="brand-titles">
+              <h1 className="title gradient-text">PadelMatch</h1>
+              <div className="subtitle gradient-text">by Jorge González</div>
+            </div>
           </div>
           <p className="tag">Rondas, marcadores y tabla de puntos en tiempo real.</p>
         </div>
