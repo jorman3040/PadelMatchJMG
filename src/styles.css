@@ -7,7 +7,8 @@
 .hero-inner{position:relative;z-index:1;padding:28px 8px 22px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand .logo{width:40px;height:40px;border-radius:8px;object-fit:cover;box-shadow:0 8px 22px rgba(0,0,0,.35)}
-.brand h1{margin:0;font-size:28px;letter-spacing:.2px;background:linear-gradient(90deg,var(--blue),var(--green),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand h1{margin:0;font-size:28px;letter-spacing:.2px}
+.gradient-text{background:linear-gradient(90deg,var(--blue),var(--green),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent}
 .tag{margin:6px 0 8px;color:#cbd5e1;font-size:14px}
 .card{background:linear-gradient(180deg,#0e1626,#0c1423);border:1px solid #14243b;border-radius:18px;padding:16px;margin:14px 0;box-shadow:0 8px 28px rgba(0,0,0,.25)}
 .elevate{position:relative}.elevate::after{content:'';position:absolute;inset:-1px;border-radius:18px;background:linear-gradient(120deg,rgba(14,165,233,.35),rgba(34,197,94,.35) 50%,rgba(239,68,68,.35));filter:blur(24px);z-index:-1;opacity:.25}
@@ -40,3 +41,8 @@ button:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.35)}
 .points{text-align:right}
 .leader-actions{display:flex;justify-content:center;margin-top:10px}
 .footer{text-align:center;color:#9fb0c5;font-size:12px;padding:24px 0}
+
+
+.brand-titles{display:flex;flex-direction:column;line-height:1.1}
+.brand-sub{font-size:14px;opacity:.9}
+
