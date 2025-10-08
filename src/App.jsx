@@ -48,7 +48,7 @@ function keyFor(roundIdx, matchIdx){
 }
 
 export default function App(){
-  const [playersRaw, setPlayersRaw] = useState('Jorge\nLilia\nDiego\nNico\nFer\nCeci\nPaul\nAna\nLuis\nVero')
+  const [playersRaw, setPlayersRaw] = useState('Jorge\nPaco\nLeo\nPepe\nAugusto\nNereo')
   const [courts, setCourts] = useState(2)
   const [roundsN, setRoundsN] = useState(4)
   const [minutes, setMinutes] = useState(20)
